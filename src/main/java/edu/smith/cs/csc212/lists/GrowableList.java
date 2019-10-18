@@ -2,6 +2,7 @@ package edu.smith.cs.csc212.lists;
 
 import me.jjfoley.adt.ArrayWrapper;
 import me.jjfoley.adt.ListADT;
+import me.jjfoley.adt.errors.RanOutOfSpaceError;
 import me.jjfoley.adt.errors.TODOErr;
 
 /**
@@ -51,7 +52,15 @@ public class GrowableList<T> extends ListADT<T> {
 	@Override
 	public T removeIndex(int index) {
 		// slide to the left
-		throw new TODOErr();
+		checkNotEmpty();
+		checkExclusiveIndex(index);
+		T removedItem = this.array.getIndex(index);
+		for (int i = index; i < this.fill-1; i++) {
+			this.array.setIndex(i, this.array.getIndex(i+1));
+		}
+		this.array.setIndex(this.fill-1, null);
+		this.fill--;
+		return removedItem;
 	}
 
 	@Override
@@ -71,14 +80,25 @@ public class GrowableList<T> extends ListADT<T> {
 	 * This private method is called when we need to make room in our GrowableList.
 	 */
 	private void resizeArray() {
-		// TODO: use this where necessary (already called in addBack!)
-		throw new TODOErr();
+		ArrayWrapper<T> tempArray = new ArrayWrapper<T>(this.array.size() * 2);
+		for (int i = 0; i < this.array.size(); i++) {
+			tempArray.setIndex(i, this.array.getIndex(i));
+		}
+		this.array = tempArray;
 	}
 
 	@Override
 	public void addIndex(int index, T item) {
 		// slide to the right
-		throw new TODOErr();
+		checkInclusiveIndex(index);
+		if (this.fill+1 > this.array.size()) {
+			resizeArray();
+		}
+		for (int i = this.fill-1; i >= index; i--) {
+			this.array.setIndex(i+1, this.array.getIndex(i));
+		}
+		this.array.setIndex(index, item);
+		this.fill++;
 	}
 
 	@Override
