@@ -17,7 +17,7 @@ public class SinglyLinkedList<T> extends ListADT<T> {
 	/**
 	 * The start of this list. Node is defined at the bottom of this file.
 	 */
-	Node<T> start;
+	Node<T> start = null;
 
 	@Override
 	public T removeFront() {
@@ -30,50 +30,99 @@ public class SinglyLinkedList<T> extends ListADT<T> {
 	@Override
 	public T removeBack() {
 		checkNotEmpty();
-		if (this.start.equals(null)) {
-			throw new EmptyListError();
-		}
-		Node<T> lastNode = null;
-		Node<T> nextToLastNode = null;
+		T removedValue = null;
+		boolean singleItemList = false;
 		for (Node<T> currentNode = this.start; currentNode != null; currentNode = currentNode.next) {
-			nextToLastNode = lastNode;
-			lastNode = currentNode;
+			if (currentNode.next == null) {
+				removedValue = currentNode.value;
+				singleItemList = true;
+			} else if (currentNode.next.next == null) {
+				removedValue = currentNode.next.value;
+				currentNode.next = null;
+			}
 		}
-		T removedValue = lastNode.value;
-		nextToLastNode.next = null;
+		if (singleItemList) {
+			this.start = null;
+		}
 		return removedValue;
 	}
 
 	@Override
 	public T removeIndex(int index) {
-		throw new TODOErr();
+		checkNotEmpty();
+		int listSize = this.size();
+		if (index >  listSize|| index < 0) {
+			throw new BadIndexError(index);
+		}
+		Node<T> currentNode = this.start;
+		T removedValue = null;
+		for (int i = 0; i <= index; i++) {
+			if (listSize == 1) {
+				removedValue = currentNode.value;
+				currentNode = null;
+				break;
+			}
+			if (currentNode.next != null) {
+				if (i == index-1) {
+					removedValue = currentNode.next.value;
+					currentNode.next = currentNode.next.next;
+					break;
+				}
+				currentNode = currentNode.next;
+			}
+		}
+		return removedValue;
 	}
 
 	@Override
 	public void addFront(T item) {
-		this.start = new Node<T>(item, start);
+		this.start = new Node<T>(item, this.start);
 	}
 
 	@Override
 	public void addBack(T item) {
-		throw new TODOErr();
+		for (Node<T> currentNode = this.start; currentNode != null; currentNode = currentNode.next) {
+			if (currentNode.next == null) {
+				currentNode.next = new Node<T>(item, currentNode.next);
+			}
+		}
+		if (this.start == null) {
+			this.start = new Node<T>(item, this.start);
+		}
 	}
 
 	@Override
 	public void addIndex(int index, T item) {
-		throw new TODOErr();
+		if (index > this.size() || index < 0) {
+			throw new BadIndexError(index);
+		}
+		Node<T> currentNode = this.start;
+		for (int i = 0; i <= index; i++) {			
+			if (i == index) {
+				currentNode.next = new Node<T>(item, currentNode.next);
+			}
+			if (currentNode.next != null) {
+				currentNode = currentNode.next;
+			}
+		}
 	}
 
 	@Override
 	public T getFront() {
 		checkNotEmpty();
-		throw new TODOErr();
+		return this.start.value;
 	}
 
 	@Override
 	public T getBack() {
 		checkNotEmpty();
-		throw new TODOErr();
+		T retrievedValue = null;
+		for (Node<T> currentNode = this.start; currentNode != null; currentNode = currentNode.next) {
+			if (currentNode.next == null) {
+				retrievedValue = currentNode.value;
+			}
+		}
+		return retrievedValue;
 	}
 
 	@Override
