@@ -50,18 +50,20 @@ public class SinglyLinkedList<T> extends ListADT<T> {
 	@Override
 	public T removeIndex(int index) {
 		checkNotEmpty();
+		//System.out.println("index to remove is: " + index);
 		int listSize = this.size();
-		if (index >  listSize|| index < 0) {
+		if (index >=  listSize|| index < 0) {
 			throw new BadIndexError(index);
 		}
-		Node<T> currentNode = this.start;
 		T removedValue = null;
+		if (index == listSize-1) {
+			return removeBack();
+		} else if (listSize == 1 || index == 0) {
+			return removeFront();
+		}
+		
+		Node<T> currentNode = this.start;
 		for (int i = 0; i <= index; i++) {
-			if (listSize == 1) {
-				removedValue = currentNode.value;
-				currentNode = null;
-				break;
-			}
 			if (currentNode.next != null) {
 				if (i == index-1) {
 					removedValue = currentNode.next.value;
@@ -84,6 +86,7 @@ public class SinglyLinkedList<T> extends ListADT<T> {
 		for (Node<T> currentNode = this.start; currentNode != null; currentNode = currentNode.next) {
 			if (currentNode.next == null) {
 				currentNode.next = new Node<T>(item, currentNode.next);
+				break;
 			}
 		}
 		if (this.start == null) {
@@ -93,13 +96,24 @@ public class SinglyLinkedList<T> extends ListADT<T> {
 
 	@Override
 	public void addIndex(int index, T item) {
-		if (index > this.size() || index < 0) {
+		int startSize = this.size();
+		if (index > startSize || index < 0) {
 			throw new BadIndexError(index);
 		}
+		if (index == 0) {
+			addFront(item);
+			return;
+		} else if (index == startSize) {
+			addBack(item);
+			return;
+		} 
+		
 		Node<T> currentNode = this.start;
-		for (int i = 0; i <= index; i++) {			
-			if (i == index) {
+		for (int i = 0; i <= index; i++) {
+			if (i+1 == index) {
+				//System.out.println("Replacing " + currentNode.next.value + " with " + item);
 				currentNode.next = new Node<T>(item, currentNode.next);
+				break;
 			}
 			if (currentNode.next != null) {
 				currentNode = currentNode.next;
