@@ -2,6 +2,7 @@ package edu.smith.cs.csc212.lists;
 
 import me.jjfoley.adt.ListADT;
 import me.jjfoley.adt.errors.BadIndexError;
+import me.jjfoley.adt.errors.EmptyListError;
 import me.jjfoley.adt.errors.TODOErr;
 
 /**
@@ -21,12 +22,26 @@ public class SinglyLinkedList<T> extends ListADT<T> {
 	@Override
 	public T removeFront() {
 		checkNotEmpty();
-		throw new TODOErr();
+		T removedValue = this.start.value;
+		this.start = this.start.next;
+		return removedValue;
 	}
 
 	@Override
 	public T removeBack() {
-		throw new TODOErr();
+		checkNotEmpty();
+		if (this.start.equals(null)) {
+			throw new EmptyListError();
+		}
+		Node<T> lastNode = null;
+		Node<T> nextToLastNode = null;
+		for (Node<T> currentNode = this.start; currentNode != null; currentNode = currentNode.next) {
+			nextToLastNode = lastNode;
+			lastNode = currentNode;
+		}
+		T removedValue = lastNode.value;
+		nextToLastNode.next = null;
+		return removedValue;
 	}
 
 	@Override
