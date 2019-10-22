@@ -2,8 +2,6 @@ package edu.smith.cs.csc212.lists;
 
 import me.jjfoley.adt.ListADT;
 import me.jjfoley.adt.errors.BadIndexError;
-import me.jjfoley.adt.errors.EmptyListError;
-import me.jjfoley.adt.errors.TODOErr;
 
 /**
  * A Singly-Linked List is a list that has only knowledge of its very first
