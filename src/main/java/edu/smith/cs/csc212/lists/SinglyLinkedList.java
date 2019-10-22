@@ -53,13 +53,14 @@ public class SinglyLinkedList<T> extends ListADT<T> {
 		if (index >=  listSize|| index < 0) {
 			throw new BadIndexError(index);
 		}
-		T removedValue = null;
+		
 		if (index == listSize-1) {
 			return removeBack();
 		} else if (listSize == 1 || index == 0) {
 			return removeFront();
 		}
 		
+		T removedValue = null;
 		Node<T> currentNode = this.start;
 		for (int i = 0; i <= index; i++) {
 			if (currentNode.next != null) {
