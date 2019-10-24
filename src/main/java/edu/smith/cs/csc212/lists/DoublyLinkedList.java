@@ -1,6 +1,7 @@
 package edu.smith.cs.csc212.lists;
 
 import me.jjfoley.adt.ListADT;
+import me.jjfoley.adt.errors.BadIndexError;
 import me.jjfoley.adt.errors.TODOErr;
 
 /**
@@ -19,12 +20,15 @@ public class DoublyLinkedList<T> extends ListADT<T> {
 	 */
 	private Node<T> end;
 	
+	private int fill;
+	
 	/**
 	 * A doubly-linked list starts empty.
 	 */
 	public DoublyLinkedList() {
 		this.start = null;
 		this.end = null;
+		this.fill = 0;
 	}
 	
 
@@ -48,7 +52,14 @@ public class DoublyLinkedList<T> extends ListADT<T> {
 
 	@Override
 	public void addFront(T item) {
-		throw new TODOErr();
+		if (start == null) {
+			start = end = new Node<T>(item);
+		} else {
+			Node<T> second = start;
+			start = new Node<T>(item, null, second);
+			second.before = start;
+		}
+		fill++;
 	}
 
 	@Override
@@ -57,10 +68,10 @@ public class DoublyLinkedList<T> extends ListADT<T> {
 			start = end = new Node<T>(item);
 		} else {
 			Node<T> secondLast = end;
-			end = new Node<T>(item);
-			end.before = secondLast;
+			end = new Node<T>(item, secondLast, null);
 			secondLast.after = end;
 		}
+		fill++;
 	}
 
 	@Override
@@ -80,21 +91,82 @@ public class DoublyLinkedList<T> extends ListADT<T> {
 	
 	@Override
 	public T getIndex(int index) {
-		throw new TODOErr();
+		checkNotEmpty();
+		if (index >= fill || index < 0) {
+			throw new BadIndexError(index);
+		} else if (index == 0) {
+			return start.value;
+		} else if (index == fill-1) {
+			return end.value;
+		}
+		
+		T retrievedValue = null;
+		//see if index is closer to the back or front, and then iterate from there. (Yay efficiency)
+		
+		if (index <= (fill-1)/2) {
+			int trackLoops = 0;
+			for (Node<T> current = this.start; trackLoops < index ; current = current.after) {
+				if (trackLoops == index-1) {
+					retrievedValue = current.after.value;
+				}
+				trackLoops++;
+			}
+		} else {
+			int trackLoops = fill-1;
+			for (Node<T> current = this.end; trackLoops > index ; current = current.before) {
+				if (trackLoops == index+1) {
+					retrievedValue = current.before.value;
+				}
+				trackLoops--;
+			}
+		}
+		return retrievedValue;
 	}
 	
 	public void setIndex(int index, T value) {
-		throw new TODOErr();
+		checkNotEmpty();
+		if (index >= fill || index < 0) {
+			throw new BadIndexError(index);
+		} else if (isEmpty()) {
+			addFront(value);
+			return;
+		}
+		
+		//see if index is closer to the back or front, and then iterate from there. (Yay efficiency)
+		
+		if (index <= (fill-1)/2) {
+			int trackLoops = 0;
+			for (Node<T> current = this.start; trackLoops <= index ; current = current.after) {
+				if (trackLoops == index) {
+					System.out.println("Changing " + current.value + " to " + value + " at index " + trackLoops);
+					current.value = value;
+				}
+				trackLoops++;
+			}
+		} else {
+			int trackLoops = fill-1;
+			for (Node<T> current = this.end; trackLoops >= index ; current = current.before) {
+				if (trackLoops == index) {
+					System.out.println("Changing " + current.value + " to " + value + " at index " + trackLoops);
+					current.value = value;
+				}
+				trackLoops--;
+			}
+		}
 	}
 
 	@Override
 	public int size() {
-		throw new TODOErr();
+		return this.fill;
 	}
 
 	@Override
 	public boolean isEmpty() {
-		throw new TODOErr();
+		if (this.start == null && this.end == null) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	/**
@@ -123,6 +195,17 @@ public class DoublyLinkedList<T> extends ListADT<T> {
 			this.value = value;
 			this.before = null;
 			this.after = null;
+		}
+		/**
+		 * Create a node with a set before and after
+		 * @param value - the value to put in it
+		 * @param before - the proceeding node
+		 * @param after - the next node
+		 */
+		public Node(T value, Node<T> before, Node<T> after) {
+			this.value = value;
+			this.before = before;
+			this.after = after;
 		}
 	}
 }
