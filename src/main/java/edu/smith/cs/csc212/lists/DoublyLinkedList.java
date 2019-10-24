@@ -35,19 +35,67 @@ public class DoublyLinkedList<T> extends ListADT<T> {
 	@Override
 	public T removeFront() {
 		checkNotEmpty();
-		throw new TODOErr();
+		T removedValue = start.value;
+		if (fill == 1) {
+			start = end = null;
+		} else {
+			start = start.after;
+			start.before = null;
+		}
+		fill--;
+		return removedValue;
 	}
 
 	@Override
 	public T removeBack() {
 		checkNotEmpty();
-		throw new TODOErr();
+		T removedValue = end.value;
+		if (fill == 1) {
+			start = end = null;
+		} else {
+			end = end.before;
+			end.after = null;
+		}
+		fill--;
+		return removedValue;
 	}
 
 	@Override
 	public T removeIndex(int index) {
 		checkNotEmpty();
-		throw new TODOErr();
+		if (index >= fill || index < 0) {
+			throw new BadIndexError(index);
+		} else if (index == 0) {
+			return removeFront();
+		} else if (index == fill-1) {
+			return removeBack();
+		}
+		
+		//see if index is closer to the back or front, and then iterate from there. (Yay efficiency)
+		T removedValue = null;
+		if (index <= (fill-1)/2) {
+			int trackLoops = 0;
+			for (Node<T> current = this.start; trackLoops < index ; current = current.after) {
+				if (trackLoops == index-1) {
+					removedValue = current.after.value;
+					current.after = current.after.after;
+					current.after.before = current;
+				}
+				trackLoops++;
+			}
+		} else {
+			int trackLoops = fill-1;
+			for (Node<T> current = this.end; trackLoops > index-2 ; current = current.before) {
+				if (trackLoops == index-1) {
+					removedValue = current.after.value;
+					current.after = current.after.after;
+					current.after.before = current;
+				}
+				trackLoops--;
+			}
+		}
+		fill--;
+		return removedValue;
 	}
 
 	@Override
@@ -76,17 +124,52 @@ public class DoublyLinkedList<T> extends ListADT<T> {
 
 	@Override
 	public void addIndex(int index, T item) {
-		throw new TODOErr();
+		if (index > fill || index < 0) {
+			throw new BadIndexError(index);
+		} else if (isEmpty() || index == 0) {
+			addFront(item);
+			return;
+		} else if (index == fill) {
+			addBack(item);
+			return;
+		}
+		
+		//see if index is closer to the back or front, and then iterate from there. (Yay efficiency)
+		
+		if (index <= (fill-1)/2) {
+			int trackLoops = 0;
+			for (Node<T> current = this.start; trackLoops < index ; current = current.after) {
+				if (trackLoops == index-1) {
+					Node<T> next = current.after;
+					current.after = new Node<T>(item, current, next);
+					current.after.after.before = current.after;
+				}
+				trackLoops++;
+			}
+		} else {
+			int trackLoops = fill-1;
+			for (Node<T> current = this.end; trackLoops > index-2 ; current = current.before) {
+				if (trackLoops == index-1) {
+					Node<T> next = current.after;
+					current.after = new Node<T>(item, current, next);
+					current.after.after.before = current.after;
+				}
+				trackLoops--;
+			}
+		}
+		fill++;
 	}
 
 	@Override
 	public T getFront() {
-		throw new TODOErr();
+		checkNotEmpty();
+		return start.value;
 	}
 
 	@Override
 	public T getBack() {
-		throw new TODOErr();
+		checkNotEmpty();
+		return end.value;
 	}
 	
 	@Override
