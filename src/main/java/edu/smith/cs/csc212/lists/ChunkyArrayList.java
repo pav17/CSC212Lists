@@ -77,6 +77,10 @@ public class ChunkyArrayList<T> extends ListADT<T> {
 		boolean found = false;
 		for (int i = 0; i < chunks.size(); i++) {
 			FixedSizeList<T> currentSubList = chunks.getIndex(i);
+			if (counter + this.chunkSize < index) {
+				counter = counter + this.chunkSize;
+				continue;
+			}
 			for (int y = 0; y < currentSubList.size(); y++) {
 				if (counter == index) {
 					removedValue = currentSubList.removeIndex(y);
@@ -200,6 +204,10 @@ public class ChunkyArrayList<T> extends ListADT<T> {
 		boolean found = false;
 		for (int i = 0; i < chunks.size(); i++) {
 			FixedSizeList<T> currentSubList = chunks.getIndex(i);
+			if (counter + this.chunkSize < index) {
+				counter = counter + this.chunkSize;
+				continue;
+			}
 			for (int y = 0; y < currentSubList.size(); y++) {
 				if (counter == index) {
 					currentSubList.setIndex(y, value);
