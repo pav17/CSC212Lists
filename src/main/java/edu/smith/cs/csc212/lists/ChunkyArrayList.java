@@ -38,27 +38,90 @@ public class ChunkyArrayList<T> extends ListADT<T> {
 
 	@Override
 	public T removeFront() {
-		throw new TODOErr();
+		checkNotEmpty();
+		T removedValue = null;
+		FixedSizeList<T> front = chunks.getFront();
+		removedValue = front.removeFront();
+		if (front.isEmpty()) {
+			chunks.removeFront();
+		}
+		return removedValue;
 	}
 
 	@Override
 	public T removeBack() {
-		throw new TODOErr();
+		checkNotEmpty();
+		T removedValue = null;
+		FixedSizeList<T> back = chunks.getBack();
+		removedValue = back.removeBack();
+		if (back.isEmpty()) {
+			chunks.removeBack();
+		}
+		return removedValue;
 	}
 
 	@Override
 	public T removeIndex(int index) {
-		throw new TODOErr();
+		checkNotEmpty();
+		int listSize = size();
+		if (index >= listSize || index < 0) {
+			throw new BadIndexError(index);
+		} else if (index == 0) {
+			return removeFront();
+		} else if (index == listSize-1) {
+			return removeBack();
+		}
+		
+		T removedValue = null;
+		int counter = 0;
+		boolean found = false;
+		for (int i = 0; i < chunks.size(); i++) {
+			FixedSizeList<T> currentSubList = chunks.getIndex(i);
+			for (int y = 0; y < currentSubList.size(); y++) {
+				if (counter == index) {
+					removedValue = currentSubList.removeIndex(y);
+					found = true;
+					break;
+				}
+				counter++;
+			}
+			if (found) {
+				if (currentSubList.isEmpty()) {
+					chunks.removeIndex(i);
+				}
+				break;
+			}
+		}
+		
+		return removedValue;
 	}
 
 	@Override
 	public void addFront(T item) {
-		throw new TODOErr();
+		if (chunks.isEmpty()) {
+			chunks.addFront(makeChunk());
+		}
+		
+		FixedSizeList<T> front = chunks.getFront();
+		if (front.isFull()) {
+			front = makeChunk();
+			chunks.addFront(front);
+		}
+		front.addFront(item);
 	}
 
 	@Override
 	public void addBack(T item) {
-		throw new TODOErr();
+		if (chunks.isEmpty()) {
+			chunks.addBack(makeChunk());
+		}
+		
+		FixedSizeList<T> back = chunks.getBack();
+		if (back.isFull()) {
+			back = makeChunk();
+			chunks.addBack(back);
+		}
+		back.addBack(item);
 	}
 
 	@Override
@@ -127,7 +190,28 @@ public class ChunkyArrayList<T> extends ListADT<T> {
 	
 	@Override
 	public void setIndex(int index, T value) {
-		throw new TODOErr();
+		checkNotEmpty();
+		int listSize = size();
+		if (index >= listSize || index < 0) {
+			throw new BadIndexError(index);
+		}
+		
+		int counter = 0;
+		boolean found = false;
+		for (int i = 0; i < chunks.size(); i++) {
+			FixedSizeList<T> currentSubList = chunks.getIndex(i);
+			for (int y = 0; y < currentSubList.size(); y++) {
+				if (counter == index) {
+					currentSubList.setIndex(y, value);
+					found = true;
+					break;
+				}
+				counter++;
+			}
+			if (found) {
+				break;
+			}
+		}
 	}
 
 	@Override

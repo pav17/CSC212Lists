@@ -221,7 +221,6 @@ public class DoublyLinkedList<T> extends ListADT<T> {
 			int trackLoops = 0;
 			for (Node<T> current = this.start; trackLoops <= index ; current = current.after) {
 				if (trackLoops == index) {
-					System.out.println("Changing " + current.value + " to " + value + " at index " + trackLoops);
 					current.value = value;
 				}
 				trackLoops++;
@@ -230,7 +229,6 @@ public class DoublyLinkedList<T> extends ListADT<T> {
 			int trackLoops = fill-1;
 			for (Node<T> current = this.end; trackLoops >= index ; current = current.before) {
 				if (trackLoops == index) {
-					System.out.println("Changing " + current.value + " to " + value + " at index " + trackLoops);
 					current.value = value;
 				}
 				trackLoops--;
