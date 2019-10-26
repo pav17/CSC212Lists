@@ -62,6 +62,7 @@ public class ChunkyArrayList<T> extends ListADT<T> {
 
 	@Override
 	public T removeIndex(int index) {
+		System.out.println("Running removeIndex("+index+")");
 		checkNotEmpty();
 		int listSize = size();
 		if (index >= listSize || index < 0) {
@@ -96,7 +97,7 @@ public class ChunkyArrayList<T> extends ListADT<T> {
 				break;
 			}
 		}
-		
+		System.out.println("Removed value: " + removedValue);
 		return removedValue;
 	}
 
@@ -130,34 +131,62 @@ public class ChunkyArrayList<T> extends ListADT<T> {
 
 	@Override
 	public void addIndex(int index, T item) {
-		// THIS IS THE HARDEST METHOD IN CHUNKY-ARRAY-LIST.
-		// DO IT LAST.
-		
-		int chunkIndex = 0;
-		int start = 0;
-		for (FixedSizeList<T> chunk : this.chunks) {
-			// calculate bounds of this chunk.
-			int end = start + chunk.size();
-			
-			// Check whether the index should be in this chunk:
-			if (start <= index && index <= end) {
-				if (chunk.isFull()) {
-					// check can roll to next
-					// or need a new chunk
-					throw new TODOErr();
-				} else {
-					// put right in this chunk, there's space.
-					throw new TODOErr();
-				}	
-				// upon adding, return.
-				// return;
-			}
-			
-			// update bounds of next chunk.
-			start = end;
-			chunkIndex++;
+		System.out.println("Running addIndex("+index+","+item+")");
+		checkNotEmpty();
+		int listSize = size();
+		if (index > listSize || index < 0) {
+			throw new BadIndexError(index);
+		} else if (isEmpty()) {
+			System.out.println("adding to empty list using addFront");
+			addFront(item);
+			return;
 		}
-		throw new BadIndexError(index);
+		
+		int counter = 0;
+		boolean found = false;
+		for (int i = 0; i < chunks.size(); i++) {
+			FixedSizeList<T> currentSubList = chunks.getIndex(i);
+			System.out.println("i = " + i);
+			if (counter + this.chunkSize < index) {
+				counter = counter + this.chunkSize;
+				continue;
+			}
+			System.out.println("sub list size: " + currentSubList.size());
+			for (int y = 0; y <= currentSubList.size(); y++) {
+				System.out.println("y = " + y);
+				System.out.println("counter = " + counter);
+				if (counter == index) {
+					System.out.println("counter = index");
+					if (currentSubList.isFull()) {
+						System.out.println("sub list full");
+						if (chunks.size() <= i+1) {
+							FixedSizeList<T> newSubList = makeChunk();
+							chunks.addIndex(i+1, newSubList);
+						}
+						if (chunks.size() > i+1 && this.chunkSize - chunks.getIndex(i+1).size() >= 1) {
+							chunks.getIndex(i+1).addFront(currentSubList.removeBack());
+							for (int x = this.chunkSize-1; x > y; x--) {
+								currentSubList.addIndex(x, currentSubList.removeIndex(x-1));
+							}
+							currentSubList.addIndex(y, item);
+						} else {
+							FixedSizeList<T> newSubList = makeChunk();
+							newSubList.addFront(item);
+							chunks.addIndex(i+1, newSubList);
+						}
+					} else {
+						System.out.println("Adding "+item+" to existing chunk.");
+						currentSubList.addIndex(y, item);
+					}
+					found = true;
+					break;
+				}
+				counter++;
+			}
+			if (found) {
+				break;
+			}
+		}
 	}
 	
 	@Override
