@@ -62,7 +62,6 @@ public class ChunkyArrayList<T> extends ListADT<T> {
 
 	@Override
 	public T removeIndex(int index) {
-		System.out.println("Running removeIndex("+index+")");
 		checkNotEmpty();
 		int listSize = size();
 		if (index >= listSize || index < 0) {
@@ -160,14 +159,14 @@ public class ChunkyArrayList<T> extends ListADT<T> {
 					if (currentSubList.isFull()) {
 						System.out.println("sub list full");
 						if (chunks.size() <= i+1) {
+							System.out.println("making new chunk");
 							FixedSizeList<T> newSubList = makeChunk();
 							chunks.addIndex(i+1, newSubList);
 						}
-						if (chunks.size() > i+1 && this.chunkSize - chunks.getIndex(i+1).size() >= 1) {
+						if (chunks.size() > i+1 && this.chunkSize - chunks.getIndex(i+1).size() > this.chunkSize - (y+1)) {
+							System.out.println("removing last item");
 							chunks.getIndex(i+1).addFront(currentSubList.removeBack());
-							for (int x = this.chunkSize-1; x > y; x--) {
-								currentSubList.addIndex(x, currentSubList.removeIndex(x-1));
-							}
+							System.out.println("adding " + item + " at " + y + " in the current sublist");
 							currentSubList.addIndex(y, item);
 						} else {
 							FixedSizeList<T> newSubList = makeChunk();
