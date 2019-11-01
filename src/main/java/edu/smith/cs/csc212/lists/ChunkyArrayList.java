@@ -96,7 +96,6 @@ public class ChunkyArrayList<T> extends ListADT<T> {
 				break;
 			}
 		}
-		System.out.println("Removed value: " + removedValue);
 		return removedValue;
 	}
 
@@ -130,55 +129,51 @@ public class ChunkyArrayList<T> extends ListADT<T> {
 
 	@Override
 	public void addIndex(int index, T item) {
-		System.out.println("Running addIndex("+index+","+item+")");
 		checkNotEmpty();
 		int listSize = size();
 		if (index > listSize || index < 0) {
 			throw new BadIndexError(index);
 		} else if (isEmpty()) {
-			System.out.println("adding to empty list using addFront");
 			addFront(item);
 			return;
+		} else if (index == listSize) {
+			addBack(item);
+			return;
 		}
-		
+
 		int counter = 0;
 		boolean found = false;
 		for (int i = 0; i < chunks.size(); i++) {
 			FixedSizeList<T> currentSubList = chunks.getIndex(i);
-			System.out.println("i = " + i);
-			if (counter + this.chunkSize < index) {
-				counter = counter + this.chunkSize;
+			if (counter + currentSubList.size() < index) {
+				counter = counter + currentSubList.size();
 				continue;
 			}
-			System.out.println("sub list size: " + currentSubList.size());
-			for (int y = 0; y <= currentSubList.size(); y++) {
-				System.out.println("y = " + y);
-				System.out.println("counter = " + counter);
+			for (int y = 0; y < this.chunkSize; y++) {
 				if (counter == index) {
-					System.out.println("counter = index");
-					if (currentSubList.isFull()) {
-						System.out.println("sub list full");
-						if (chunks.size() <= i+1) {
-							System.out.println("making new chunk");
-							FixedSizeList<T> newSubList = makeChunk();
-							chunks.addIndex(i+1, newSubList);
-						}
-						if (chunks.size() > i+1 && this.chunkSize - chunks.getIndex(i+1).size() > this.chunkSize - (y+1)) {
-							System.out.println("removing last item");
-							chunks.getIndex(i+1).addFront(currentSubList.removeBack());
-							System.out.println("adding " + item + " at " + y + " in the current sublist");
-							currentSubList.addIndex(y, item);
+					if (y < currentSubList.size()) {
+						if (currentSubList.isFull()) {
+							if (chunks.size() <= i+1 || chunks.getIndex(i+1).size() == this.chunkSize) {
+								FixedSizeList<T> newSubList = makeChunk();
+								chunks.addIndex(i+1, newSubList);
+							}
+							if (chunks.size() > i+1 && currentSubList.size() == this.chunkSize && chunks.getIndex(i+1).size() < this.chunkSize) {
+								chunks.getIndex(i+1).addFront(currentSubList.removeBack());
+								currentSubList.addIndex(y, item);
+							} else {
+								FixedSizeList<T> newSubList = makeChunk();
+								newSubList.addFront(item);
+								chunks.addIndex(i+1, newSubList);
+							}
 						} else {
-							FixedSizeList<T> newSubList = makeChunk();
-							newSubList.addFront(item);
-							chunks.addIndex(i+1, newSubList);
+							currentSubList.addIndex(y, item);
 						}
 					} else {
-						System.out.println("Adding "+item+" to existing chunk.");
-						currentSubList.addIndex(y, item);
+						currentSubList.addBack(item);
 					}
 					found = true;
 					break;
+					
 				}
 				counter++;
 			}

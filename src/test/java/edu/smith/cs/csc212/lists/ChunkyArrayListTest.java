@@ -158,7 +158,6 @@ public class ChunkyArrayListTest {
 	
 	@Test
 	public void testAddIndexMany() {
-		System.out.println("Running add index many test.");
 		ListADT<Integer> items1 = makeEmptyList();
 		for (int i=0; i<GrowableList.START_SIZE*5; i++) {
 			items1.addBack((i+1)*3);
@@ -174,6 +173,7 @@ public class ChunkyArrayListTest {
 			int value = items1.removeIndex(rand.nextInt(items1.size()));
 			insertSorted(items2, value);
 		}
+		
 		
 		for (int i=0; i<GrowableList.START_SIZE*5; i++) {
 			Assert.assertEquals((i+1)*3, (int) items2.getIndex(i)); 
@@ -236,7 +236,6 @@ public class ChunkyArrayListTest {
 	
 	@Test
 	public void testAddIndexBack() {
-		System.out.println("Starting add index back test");
 		ListADT<String> data = makeEmptyList();
 		data.addBack("A");
 		Assert.assertEquals(1, data.size());
