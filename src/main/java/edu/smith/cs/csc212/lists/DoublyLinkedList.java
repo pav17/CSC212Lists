@@ -2,7 +2,6 @@ package edu.smith.cs.csc212.lists;
 
 import me.jjfoley.adt.ListADT;
 import me.jjfoley.adt.errors.BadIndexError;
-import me.jjfoley.adt.errors.TODOErr;
 
 /**
  * A Doubly-Linked List is a list based on nodes that know of their successor and predecessor.
